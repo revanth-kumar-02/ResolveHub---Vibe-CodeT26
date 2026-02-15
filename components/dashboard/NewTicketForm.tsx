@@ -29,16 +29,21 @@ export function NewTicketForm() {
     useEffect(() => {
         if (!user) return;
 
-        let priority: Priority = 'low';
+        let priority: Priority = 'medium';
 
-        // Role-based baseline
-        if (user.role === 'admin' || user.role === 'manager') priority = 'high';
-        else priority = 'medium';
-
-        // Type-based overrides
-        if (type === 'security') priority = 'critical';
-        if (type === 'access' && priority === 'low') priority = 'medium';
-        if (type === 'other') priority = 'low';
+        // Type-based priority (highest priority)
+        if (type === 'security') {
+            priority = 'critical';
+        } else if (type === 'other') {
+            priority = 'low';
+        } else {
+            // Role-based priority for other ticket types
+            if (user.role === 'admin' || user.role === 'manager') {
+                priority = 'high';
+            } else {
+                priority = 'medium';
+            }
+        }
 
         setCalculatedPriority(priority);
     }, [type, user]);
